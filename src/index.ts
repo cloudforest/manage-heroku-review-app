@@ -104,6 +104,15 @@ async function run() {
           pr_number,
         })
       );
+
+      const environment: Record<string, string> = {};
+
+      for (const [key, value] of Object.entries(process.env)) {
+        if (key.startsWith("HEROKU_ENV_")) {
+          environment[key.replace("HEROKU_ENV_", "")] = value!;
+        }
+      }
+
       const response = await heroku!.post("/review-apps", {
         body: {
           branch,
@@ -113,6 +122,7 @@ async function run() {
             version,
           },
           pr_number,
+          environment,
         },
       });
       core.debug(response);
